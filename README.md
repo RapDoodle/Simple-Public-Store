@@ -1,2 +1,2 @@
-# Simple-Public-Store
+# Simple Public Store
 A smple file server built with Express.

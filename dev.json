@@ -1,0 +1,7 @@
+{
+  "randomUploadKeyLength": 8,
+  "randomDownloadKeyLength": 8,
+  "randomFileKeyLength": 16,
+  "dataPath": "./files",
+  "maxFileSizeInMB": 8
+}
