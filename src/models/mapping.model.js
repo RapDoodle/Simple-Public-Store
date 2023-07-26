@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
+    accessLevel: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     encryption: {
       type: DataTypes.STRING,
       allowNull: true

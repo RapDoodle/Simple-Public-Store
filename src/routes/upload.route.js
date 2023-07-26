@@ -51,7 +51,7 @@ router.post('', (req, res, next) => {
     const mapping = await saveFile({
       fileName: req.file.originalname,
       content: req.file.buffer,
-      access: req.body.access,
+      accessLevel: req.body.accessLevel,
       password: req.body.password
     });
     res.send(mapping);

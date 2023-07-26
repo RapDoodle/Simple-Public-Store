@@ -5,16 +5,31 @@ const { isFileNameValid } = require('../utils/file.util');
 const { getConfig, getDataPath } = require('../utils/config.util');
 const { generateRandomKey } = require('../utils/key.util');
 
+const PUBLIC = 1;
+const PROTECTED = 2;
+
 const saveFile = async (options) => {
   if (!options.fileName || !isFileNameValid(options.fileName)) {
     throw { errorMessage: 'The filename is empty or invalid.' };
   }
   const fileKey = generateRandomKey(getConfig("randomFileKeyLength"));
+  if (!options.accessLevel) {
+    options.accessLevel = 'protected';
+  }
+  let accessLevel;
+  if (options.accessLevel === 'public') {
+    accessLevel = PUBLIC;
+  } else if (options.accessLevel === 'protected') {
+    accessLevel = PROTECTED;
+  } else {
+    throw { errorMessage: `Unknown access level type ${options.accessLevel}.` };
+  }
 
   // Store the record in database
   const mapping = Mapping.build({
     fileKey: fileKey,
-    fileName: options.fileName
+    fileName: options.fileName,
+    accessLevel: accessLevel
   });
   const dbSavePromise = mapping.save();
 
