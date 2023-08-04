@@ -14,13 +14,13 @@ const argv = yargs
     alias: 'p',
     description: 'Set the port',
     type: 'number',
-    default: 3000
+    default: null
   })
   .option('host', {
     alias: 'h',
     description: 'Set the host',
     type: 'string',
-    default: 'localhost'
+    default: ''
   })
   .option('enable-https', {
     description: 'Enable HTTPS',
@@ -76,16 +76,19 @@ fs.watch('files', (eventType, filename) => {
   }
 });
 
+const host = argv.host || getConfig('host') || 'localhost';
+const port = argv.port || getConfig('port') || 3000;
+
 if (argv.enableHttps) {
   const privateKey = fs.readFileSync(argv.privateKey, 'utf8');
   const certificate = fs.readFileSync(argv.publicKey, 'utf8');
   const credentials = { key: privateKey, cert: certificate };
   const httpsServer = https.createServer(credentials, app);
-  httpsServer.listen(argv.port, argv.host, () => {
-    console.log(`Server started on https://${argv.host}:${argv.port}`);
+  httpsServer.listen(port, host, () => {
+    console.log(`Server started on https://${host}:${port}`);
   });
 } else {
-  app.listen(argv.port, argv.host, () => {
-    console.log(`Server started on http://${argv.host}:${argv.port}`);
+  app.listen(port, host, () => {
+    console.log(`Server started on http://${host}:${port}`);
   });
 }
