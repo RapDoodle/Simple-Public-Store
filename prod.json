@@ -3,5 +3,15 @@
   "randomDownloadKeyLength": 8,
   "randomFileKeyLength": 16,
   "dataPath": "./files",
-  "maxFileSizeInMB": 8
+  "maxFileSizeInMB": 8,
+  "mailboxes": [
+    {
+      "name": "MyMailbox",
+      "mailboxPath": "~/Documents/MyMailbox",
+      "accessPolicy": {
+        "requiresUploadKey": true,
+        "mailboxKey": "5cdacadc-0e58-4543-8322-6ec97f8c073a"
+      }
+    }
+  ]
 }

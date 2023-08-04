@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node ./src/app.js -c prod.json",
-    "dev": "nodemon ./src/app.js -c dev.json"
+    "dev": "npx nodemon ./src/app.js -c dev.json"
   },
   "repository": {
     "type": "git",

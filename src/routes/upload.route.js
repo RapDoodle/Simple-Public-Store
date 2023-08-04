@@ -4,6 +4,7 @@ const { getConfig, getDataPath } = require('../utils/config.util');
 const { saveFile } = require('../services/file.service');
 
 const multer = require('multer');
+const { getMailbox, saveToMailbox } = require('../services/mailbox.service');
 
 const uploadKey = generateRandomKey(getConfig('randomUploadKeyLength'));
 console.log(`Upload Key: ${uploadKey}`);
@@ -27,7 +28,6 @@ const getUploadMiddleware = (maxSizeMB) => {
 // Upload endpoint
 router.post('', (req, res, next) => {
   const userMaxSizeMB = getConfig('maxFileSizeInMB');
-  console.log(userMaxSizeMB)
   const upload = getUploadMiddleware(userMaxSizeMB);
   upload(req, res, (err) => {
     if (err instanceof multer.MulterError) {
@@ -41,20 +41,34 @@ router.post('', (req, res, next) => {
     }
   });
 }, async (req, res) => {
-  if (req.body.key !== uploadKey) {
-    return res.status(403).send('Invalid upload key');
-  }
-  if (!req.file) {
-    return res.status(400).send('No file was sent.');
-  }
   try {
-    const mapping = await saveFile({
-      fileName: req.file.originalname,
-      content: req.file.buffer,
-      accessLevel: req.body.accessLevel,
-      password: req.body.password
-    });
-    res.send(mapping);
+    if (!req.file) {
+      return res.status(400).send('No file was sent.');
+    }
+    let mailbox = null;
+    if (req.body.mailbox) {
+      mailbox = getMailbox(req.body.mailbox);
+    }
+    if (!mailbox || mailbox?.accessPolicy?.requiresUploadKey) {
+      if (req.body.uploadKey !== uploadKey) {
+        return res.status(403).send('Invalid upload key');
+      }
+    }
+    if (mailbox) {
+      if (mailbox?.accessPolicy?.mailboxKey !== req.body.mailboxKey) {
+        return res.status(403).send('Invalid upload key');
+      }
+      await saveToMailbox(mailbox.name, req.file.originalname, req.file.buffer);
+      res.send();
+    } else {
+      const mapping = await saveFile({
+        fileName: req.file.originalname,
+        content: req.file.buffer,
+        accessLevel: req.body.accessLevel,
+        password: req.body.password
+      });
+      res.send(mapping);
+    }
   } catch (err) {
     if (err.errorMessage) {
       return res.status(400).send(err.errorMessage);
